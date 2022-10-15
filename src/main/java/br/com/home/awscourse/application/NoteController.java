@@ -2,6 +2,7 @@ package br.com.home.awscourse.application;
 
 import br.com.home.awscourse.domain.Note;
 import br.com.home.awscourse.infrastructure.s3.AWSProperties;
+import br.com.home.awscourse.infrastructure.storage.Storage;
 import com.amazonaws.services.s3.AmazonS3;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +18,11 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 public class NoteController {
 
-    private final AmazonS3 amazonS3;
-    private final AWSProperties awsProperties;
+    private final Storage storage;
 
     @PostMapping
     public ResponseEntity<Note> save(@RequestBody Note note) {
-        var bucketName = awsProperties.getS3BucketName();
-        amazonS3.putObject(bucketName, note.getTitle(), note.getContent());
-
+        storage.save(note);
         return ResponseEntity.status(CREATED).build();
     }
 
